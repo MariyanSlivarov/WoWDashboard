@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\WoWDashboard.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\wwwroot\\css\\custom.css",
+      "PackagePath": "staticwebassets\\css\\custom.css"
+    },
+    {
       "Id": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },

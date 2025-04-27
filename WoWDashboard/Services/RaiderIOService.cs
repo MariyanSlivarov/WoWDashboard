@@ -36,7 +36,7 @@ namespace WoWDashboard.Services
                             .GetDouble();
 
             var raidProgressionData = data.GetProperty("raid_progression");
-            var firstRaid = raidProgressionData.EnumerateObject().First(); // Just taking the first raid (e.g., Amirdrassil)
+            var firstRaid = raidProgressionData.EnumerateObject().First();
 
             var progression = new RaidProgression
             {

@@ -160,12 +160,10 @@ namespace WoWDashboard.Services
               string jsonString = await response.Content.ReadAsStringAsync();
             JsonDocument doc = JsonDocument.Parse(jsonString);
 
-            // Navigate to the "assets" array
             var assets = doc.RootElement.GetProperty("assets");
 
             string avatarUrl = null;
 
-            // Loop through the assets
             foreach (var asset in assets.EnumerateArray())
             {
                 if (asset.GetProperty("key").GetString() == "avatar")

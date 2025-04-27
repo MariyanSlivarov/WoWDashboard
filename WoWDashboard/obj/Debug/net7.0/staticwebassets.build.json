@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "sMj5qfZo8AsEZEvH78hLrrGIA3MlEzGG0/T7W/2n+ok=",
+  "Hash": "7lCr4LpvvxW1rIJgv5xTUAQ7NL7SMXUYaiU61USuAA4=",
   "Source": "WoWDashboard",
   "BasePath": "_content/WoWDashboard",
   "Mode": "Default",
@@ -49,6 +49,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\obj\\Debug\\net7.0\\scopedcss\\projectbundle\\WoWDashboard.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\wwwroot\\css\\custom.css",
+      "SourceId": "WoWDashboard",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\wwwroot\\",
+      "BasePath": "_content/WoWDashboard",
+      "RelativePath": "css/custom.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\custom.css"
     },
     {
       "Identity": "C:\\Users\\User\\source\\repos\\WoWDashboard\\WoWDashboard\\wwwroot\\css\\site.css",

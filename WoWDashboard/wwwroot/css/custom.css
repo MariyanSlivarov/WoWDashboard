@@ -1,0 +1,38 @@
+﻿..fade-in {
+    opacity: 0;
+    animation: fadeInAnimation 1s ease forwards;
+}
+
+@keyframes fadeInAnimation {
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-up {
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUpAnimation 0.8s ease forwards;
+}
+
+@keyframes slideUpAnimation {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.btn-animate {
+    transition: all 0.3s ease;
+}
+
+    .btn-animate:hover {
+        transform: scale(1.05);
+        background-color: #0d6efd;
+        color: white;
+    }
+
+.form-control:focus {
+    box-shadow: 0 0 8px #0d6efd;
+    border-color: #0d6efd;
+}
