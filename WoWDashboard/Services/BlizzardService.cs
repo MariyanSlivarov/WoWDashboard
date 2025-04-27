@@ -119,6 +119,7 @@ namespace WoWDashboard.Services
             using var document = JsonDocument.Parse(json);
 
             var equipmentItems = new List<GearItem>();
+            int totalCharacterIlvl = 0;
 
             foreach (var item in document.RootElement.GetProperty("equipped_items").EnumerateArray())
             {
@@ -130,10 +131,9 @@ namespace WoWDashboard.Services
                     ItemLevel = item.GetProperty("level").GetProperty("value").GetInt32(),
                     ItemId = item.GetProperty("item").GetProperty("id").GetInt32(),
                 };
-
                 equipmentItems.Add(equipmentItem);
             }
-
+            
             return equipmentItems;
         }
         public async Task<String> GetCharacterAvatartAsync(string name, string realm, string region)
