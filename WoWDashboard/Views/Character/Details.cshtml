@@ -1,0 +1,67 @@
+﻿@model WoWDashboard.Models.Character
+
+@{
+    ViewData["Title"] = "Character Details";
+}
+
+
+<div class="container mt-4" style="background-color: #1e1e2f; color: #d1d1e0; border-radius: 10px; padding: 20px;">
+    
+    <!-- Flex row for text and avatar -->
+    <div class="d-flex align-items-start justify-content-between">
+        <div>
+            <h2 class="mb-3">@Model.Name (@Model.Realm)</h2>
+            <p><strong>Guild:</strong> @Model.Guild</p>
+            <p><strong>Level:</strong> @Model.Level</p>
+            <p><strong>Race:</strong> @Model.Race</p>
+            <p><strong>Class:</strong> @Model.CharacterClass</p>
+            <div class="raid-progress">
+                <p><strong>@Model.RaidProgression.RaidName :</strong> @Model.RaidProgression.Summary</p>
+            </div>
+            <p><strong>Raider.IO Score:</strong> @Model.RaiderIoScore</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+        {
+            <div class="ms-4" style="display: flex; align-items: center;">
+                <img src="@Model.AvatarUrl" alt="Character Avatar" class="img-fluid rounded-circle" style="max-width: 250px; max-height: 250px; border-radius: 10px;" />
+            </div>
+        }
+    </div>
+
+    <hr style="border-color: #444;" />
+
+    <h3 class="mt-4 mb-3">Equipped Items</h3>
+
+    @if (Model.GearItems != null && Model.GearItems.Any())
+    {
+        <table class="table table-dark table-striped table-bordered" style="border-radius: 8px; overflow: hidden;">
+            <thead>
+                <tr>
+                    <th>Slot</th>
+                    <th>Item Name</th>
+                    <th>Item Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.GearItems)
+                {
+                    <tr>
+                        <td>@item.Slot</td>
+                        <td>
+                            <a href="https://www.wowhead.com/item=@item.ItemId" target="_blank" style="color: #9ecbff; text-decoration: none;">
+                                @item.Name
+                            </a>
+                        </td>
+                        <td>@item.ItemLevel</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No items equipped.</p>
+    }
+
+</div>

@@ -1,0 +1,29 @@
+﻿@model WoWDashboard.Models.Character
+
+@{
+    ViewData["Title"] = "Search Character";
+}
+
+<h2>Search WoW Character</h2>
+
+<form method="post" asp-action="Details">
+    <div>
+        <label>Character Name:</label>
+        <input type="text" name="name" required />
+    </div>
+    <div>
+        <label>Realm:</label>
+        <input type="text" name="realm" required />
+    </div>
+    <div>
+        <label>Region:</label>
+        <select name="region" required>
+            <option value="us">US</option>
+            <option value="eu">EU</option>
+            <option value="kr">KR</option>
+            <option value="tw">TW</option>
+            <option value="cn">CN</option>
+        </select>
+    </div>
+    <button type="submit">Search</button>
+</form>
