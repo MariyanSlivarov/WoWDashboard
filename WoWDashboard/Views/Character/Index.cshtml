@@ -32,8 +32,10 @@
                 <option value="cn">CN</option>
             </select>
         </div>
-        <div class="text-center">
+        <div class="text-center d-flex justify-content-center gap-3">
             <button type="submit" class="btn btn-primary px-4 btn-animate">Search</button>
+
+            <a asp-action="SavedCharacters" asp-controller="Character" class="btn btn-secondary px-4 btn-animate">Saved Characters</a>
         </div>
     </form>
 </div>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WoWDashboard.Data;
 using WoWDashboard.Models;
 using WoWDashboard.Services;
@@ -23,6 +24,12 @@ namespace WoWDashboard.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> SavedCharacters()
+        {
+            var characters = await _context.Characters.ToListAsync();
+            return View(characters); 
         }
 
         public IActionResult GoToIndex()
@@ -53,6 +60,23 @@ namespace WoWDashboard.Controllers
             return View(character);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SavedCharacterDetails(int id)
+        {
+           
+            var character = await _context.Characters
+                .Include(c => c.GearItems) 
+                .Include(c => c.RaidProgression)
+                .FirstOrDefaultAsync(c => c.Id == id);  
+
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", character);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> SaveCharacter(string name, string realm, string region)
@@ -69,6 +93,28 @@ namespace WoWDashboard.Controllers
             await _context.SaveChangesAsync();
 
             return View("Details", character);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var character = await _context.Characters.FindAsync(id);
+            if (character == null)
+            {
+                return NotFound();
+            }
+            return View(character);
+        }
+     
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var character = await _context.Characters.FindAsync(id);
+            if (character != null)
+            {
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(SavedCharacters));
         }
     }
 }

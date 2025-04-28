@@ -14,7 +14,6 @@ namespace WoWDashboard.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Character
             modelBuilder.Entity<Character>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -35,7 +34,6 @@ namespace WoWDashboard.Data
                     .HasForeignKey<RaidProgression>(r => r.CharacterId);
             });
 
-            // GearItem
             modelBuilder.Entity<GearItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -44,7 +42,6 @@ namespace WoWDashboard.Data
                 entity.Property(e => e.Rarity).HasMaxLength(50);
             });
 
-            // RaidProgression
             modelBuilder.Entity<RaidProgression>(entity =>
             {
                 entity.HasKey(e => e.Id);
