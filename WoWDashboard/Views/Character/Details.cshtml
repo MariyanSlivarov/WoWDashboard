@@ -66,6 +66,20 @@
     {
         <p>No items equipped.</p>
     }
+
+    <!-- Add Save Character Button -->
+    <div class="d-flex gap-2 mt-3">
+        <form asp-action="SaveCharacter" method="post">
+            <input type="hidden" name="name" value="@Model.Name" />
+            <input type="hidden" name="realm" value="@Model.Realm" />
+            <input type="hidden" name="region" value="@Model.Region" />
+            <button type="submit" class="btn btn-primary">Save Character</button>
+        </form>
+
+        <form asp-action="GoToIndex" method="post">
+            <button type="submit" class="btn btn-secondary">Back to Home</button>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

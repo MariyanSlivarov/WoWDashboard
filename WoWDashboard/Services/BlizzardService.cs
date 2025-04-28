@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using WoWDashboard.Data;
 using WoWDashboard.Models;
 
 namespace WoWDashboard.Services
@@ -9,12 +10,14 @@ namespace WoWDashboard.Services
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly string _clientId;
         private readonly string _clientSecret;
+        private readonly ApplicationDbContext _context;
         private DateTime _tokenExpiration;
 
-        public BlizzardService(IConfiguration configuration)
+        public BlizzardService(ApplicationDbContext context, IConfiguration configuration)
         {
             _clientId = configuration["Blizzard:ClientId"] ?? throw new ArgumentNullException("Blizzard ClientId is not set");
             _clientSecret = configuration["Blizzard:ClientSecret"] ?? throw new ArgumentNullException("Blizzard ClientSecret is not set");
+            _context = context;
         }
 
         private async Task<string> AuthenticateAsync()
@@ -67,6 +70,8 @@ namespace WoWDashboard.Services
 
               var content = await response.Content.ReadAsStringAsync();
               var data = JsonSerializer.Deserialize<JsonElement>(content);
+              var extractedRegion = region.ToLower();
+              var extractedId = data.GetProperty("id").GetInt32();
               var extractedName = data.GetProperty("name").GetString();
               var extractedRealm = data.GetProperty("realm").GetProperty("name").GetString();
               var ectractedLevel = data.GetProperty("level").GetInt32();
@@ -82,15 +87,16 @@ namespace WoWDashboard.Services
 
             var character = new Character
             {
+                Id = extractedId,
                 Name = extractedName,
                 Realm = extractedRealm,
+                Region = extractedRegion,
                 Level = ectractedLevel,
                 Race = race,
                 CharacterClass = characterClass,
                 Guild = guild
 
               };
-
               return character;
           }
         public async Task<List<GearItem>> GetCharacterEquipmentAsync(string name, string realm, string region)
@@ -147,7 +153,7 @@ namespace WoWDashboard.Services
 
               var realmSlug = realm.ToLower().Replace(" ", "-");
               var characterName = name.ToLower();
-            var characterRegion = region.ToLower();
+              var characterRegion = region.ToLower();
 
             var requestUrl = $"https://{characterRegion}.api.blizzard.com/profile/wow/character/{realmSlug}/{characterName}/character-media?namespace=profile-{characterRegion}&locale=en_US&access_token={_accessToken}";
               _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
@@ -172,11 +178,9 @@ namespace WoWDashboard.Services
                     break;
                 }
             }
-
-
-
             return avatarUrl;
         }
+
     }
 }
     

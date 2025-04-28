@@ -1,8 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using WoWDashboard.Data;
 using WoWDashboard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddSingleton<BlizzardService>();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 42)) // Adjust MySQL version as needed
+    ));
+builder.Services.AddScoped<BlizzardService>();
 builder.Services.AddSingleton<RaiderIOService>();
 builder.Services.AddControllersWithViews();
 
