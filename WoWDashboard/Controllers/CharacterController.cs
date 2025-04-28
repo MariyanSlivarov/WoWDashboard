@@ -106,6 +106,7 @@ namespace WoWDashboard.Controllers
         }
      
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var character = await _context.Characters.FindAsync(id);
@@ -114,6 +115,42 @@ namespace WoWDashboard.Controllers
                 _context.Characters.Remove(character);
                 await _context.SaveChangesAsync();
             }
+            return RedirectToAction(nameof(SavedCharacters));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var character = await _context.Characters.FindAsync(id);
+            if (character == null)
+            {
+                return NotFound();
+            }
+            return View(character);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFinal(int id, string name, string realm, string characterClass, string race, int level, string region, string guild, int raiderIoScore, string avatarUrl)
+        {
+            var character = await _context.Characters.FindAsync(id);
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            character.Name = name;
+            character.Realm = realm;
+            character.CharacterClass = characterClass;
+            character.Race = race;
+            character.Level = level;
+            character.Region = region;
+            character.Guild = guild;
+            character.RaiderIoScore = raiderIoScore;
+            character.AvatarUrl = avatarUrl;
+
+            _context.Update(character);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(SavedCharacters));
         }
     }

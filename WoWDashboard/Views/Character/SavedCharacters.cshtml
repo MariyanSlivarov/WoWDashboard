@@ -35,6 +35,7 @@
                         <td>@character.Level</td>
                         <td>
                             <a asp-action="SavedCharacterDetails" asp-route-id="@character.Id" class="btn btn-primary btn-sm">View Details</a>
+                            <a asp-action="Edit" asp-route-id="@character.Id" class="btn btn-warning btn-sm">Edit</a>
                             <a asp-action="Delete" asp-route-id="@character.Id" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
