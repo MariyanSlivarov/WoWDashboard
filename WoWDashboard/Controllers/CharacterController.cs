@@ -26,10 +26,29 @@ namespace WoWDashboard.Controllers
             return View();
         }
 
-        public async Task<IActionResult> SavedCharacters()
+        public async Task<IActionResult> SavedCharacters(string searchTerm)
         {
-            var characters = await _context.Characters.ToListAsync();
-            return View(characters); 
+            var characters = from c in _context.Characters
+                             select c;
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var terms = searchTerm.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var term in terms)
+                {
+                    characters = characters.Where(c =>
+                        c.Name.ToLower().Contains(term) ||
+                        c.Realm.ToLower().Contains(term) ||
+                        c.CharacterClass.ToLower().Contains(term) ||
+                        c.Level.ToString() == term
+                    );
+                }
+
+                ViewData["SearchTerm"] = searchTerm;
+            }
+
+            return View(await characters.ToListAsync());
         }
 
         public IActionResult GoToIndex()
@@ -94,6 +113,8 @@ namespace WoWDashboard.Controllers
 
             return View("Details", character);
         }
+
+
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {

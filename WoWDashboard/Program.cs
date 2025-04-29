@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 42)) // Adjust MySQL version as needed
+        new MySqlServerVersion(new Version(8, 0, 42)) 
     ));
 builder.Services.AddScoped<BlizzardService>();
 builder.Services.AddSingleton<RaiderIOService>();
