@@ -17,6 +17,9 @@ namespace WoWDashboard.Data
             modelBuilder.Entity<Character>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.OriginalName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.OriginalRealm).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.OriginalRegion).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Realm).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Race).IsRequired().HasMaxLength(50);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using WoWDashboard.Data;
 using WoWDashboard.Models;
 using WoWDashboard.Services;
@@ -158,7 +159,12 @@ namespace WoWDashboard.Controllers
             {
                 return NotFound();
             }
-
+            if (string.IsNullOrEmpty(character.OriginalName))
+            {
+                character.OriginalName = character.Name;
+                character.OriginalRealm = character.Realm;
+                character.OriginalRegion = character.Region;
+            }
             character.Name = name;
             character.Realm = realm;
             character.CharacterClass = characterClass;
@@ -173,6 +179,40 @@ namespace WoWDashboard.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(SavedCharacters));
+        }
+        public async Task<IActionResult> UpdateCharacter(int id)
+        {
+            var character = await _context.Characters.FindAsync(id);
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            var updatedCharacter = await _blizzardService.GetCharacterInfoAsync(character.OriginalName, character.OriginalRealm, character.OriginalRegion);
+            var updatedAvatarUrl = await _blizzardService.GetCharacterAvatartAsync(character.OriginalName, character.OriginalRealm, character.OriginalRegion);
+            var (score, progression) = await _raiderIOService.GetRaiderIoProfileAsync(character.OriginalName, character.OriginalRealm, character.OriginalRegion);
+
+            if (updatedCharacter == null)
+            {
+                TempData["ErrorMessage"] = "Failed to fetch updated character data from Blizzard API.";
+                return RedirectToAction("SavedCharacters");
+            }
+
+            character.Realm = updatedCharacter.Realm;
+            character.Region = updatedCharacter.Region;
+            character.RaiderIoScore = score;
+            character.AvatarUrl = updatedAvatarUrl;
+            character.Name = updatedCharacter.Name;
+            character.Level = updatedCharacter.Level;
+            character.Guild = updatedCharacter.Guild;
+            character.Race = updatedCharacter.Race;
+            character.CharacterClass = updatedCharacter.CharacterClass;
+
+            _context.Update(character);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"{character.Name}'s information was updated.";
+            return RedirectToAction("SavedCharacters");
         }
     }
 }

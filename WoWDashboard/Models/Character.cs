@@ -2,6 +2,9 @@
 {
     public class Character
     {
+        public string OriginalName { get; set; } = string.Empty;
+        public string OriginalRealm { get; set; } = string.Empty;
+        public string OriginalRegion { get; set; } = string.Empty;
         public int Id { get; set; } 
         public string Name { get; set; } = string.Empty;
         public string Realm { get; set; } = string.Empty;
