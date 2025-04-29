@@ -112,7 +112,7 @@ namespace WoWDashboard.Controllers
             _context.Characters.Add(character);
             await _context.SaveChangesAsync();
 
-            return View("Details", character);
+            return View("Index");
         }
 
 
