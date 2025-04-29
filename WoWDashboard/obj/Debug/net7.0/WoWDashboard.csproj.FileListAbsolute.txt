@@ -76,3 +76,6 @@ C:\Users\User\source\repos\WoWDashboard\WoWDashboard\obj\Debug\net7.0\refint\WoW
 C:\Users\User\source\repos\WoWDashboard\WoWDashboard\obj\Debug\net7.0\WoWDashboard.pdb
 C:\Users\User\source\repos\WoWDashboard\WoWDashboard\obj\Debug\net7.0\WoWDashboard.genruntimeconfig.cache
 C:\Users\User\source\repos\WoWDashboard\WoWDashboard\obj\Debug\net7.0\ref\WoWDashboard.dll
+C:\Users\User\source\repos\WoWDashboard\WoWDashboard\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\User\source\repos\WoWDashboard\WoWDashboard\bin\Debug\net7.0\Microsoft.Bcl.Memory.dll
+C:\Users\User\source\repos\WoWDashboard\WoWDashboard\bin\Debug\net7.0\Microsoft.Bcl.TimeProvider.dll
