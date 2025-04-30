@@ -58,6 +58,20 @@ namespace WoWDashboard.Controllers
             return RedirectToAction("Index", "Character");
         }
 
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Append("jwt", "", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(-1) 
+            });
+
+            return RedirectToAction("Index", "Login");
+        }
+
         private string GenerateJwtToken(User user)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
