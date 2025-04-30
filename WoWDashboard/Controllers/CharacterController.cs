@@ -149,7 +149,9 @@ namespace WoWDashboard.Controllers
             var (score, progression) = await _raiderIOService.GetRaiderIoProfileAsync(name, realm, region);
             var equipedItems = await _blizzardService.GetCharacterEquipmentAsync(name, realm, region);
             var avatarUrl = await _blizzardService.GetCharacterAvatartAsync(name, realm, region);
-
+            existingCharacter.OriginalName = character.Name;
+            existingCharacter.OriginalRealm = character.Realm;
+            existingCharacter.OriginalRegion = character.Region;
             existingCharacter.AvatarUrl = avatarUrl;
             existingCharacter.GearItems = equipedItems;
             existingCharacter.RaiderIoScore = score;
