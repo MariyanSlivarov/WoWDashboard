@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Security.Claims;
 using WoWDashboard.Data;
 using WoWDashboard.Models;
 using WoWDashboard.Services;
@@ -27,10 +29,20 @@ namespace WoWDashboard.Controllers
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> SavedCharacters(string searchTerm)
         {
-            var characters = from c in _context.Characters
-                             select c;
+            
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            int userId = int.Parse(userIdClaim);
+
+            
+            var userCharacters = _context.UserCharacters
+            .Where(uc => uc.UserId == userId)
+            .Include(uc => uc.Character)  
+            .Select(uc => uc.Character);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -38,7 +50,7 @@ namespace WoWDashboard.Controllers
 
                 foreach (var term in terms)
                 {
-                    characters = characters.Where(c =>
+                    userCharacters = userCharacters.Where(c =>
                         c.Name.ToLower().Contains(term) ||
                         c.Realm.ToLower().Contains(term) ||
                         c.CharacterClass.ToLower().Contains(term) ||
@@ -49,8 +61,9 @@ namespace WoWDashboard.Controllers
                 ViewData["SearchTerm"] = searchTerm;
             }
 
-            return View(await characters.ToListAsync());
+            return View(await userCharacters.ToListAsync());
         }
+
 
         public IActionResult GoToIndex()
         {
@@ -97,19 +110,52 @@ namespace WoWDashboard.Controllers
             return View("Details", character);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> SaveCharacter(string name, string realm, string region)
         {
             var character = await _blizzardService.GetCharacterInfoAsync(name, realm, region);
-            var (score, progression) = await _raiderIOService.GetRaiderIoProfileAsync(name, realm, region); 
+
+            int userIdClaim = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            if (userIdClaim == 0)
+            {
+                return Unauthorized();
+            }
+
+            character.UserId = userIdClaim;
+            var existingCharacter = await _context.Characters
+                .FirstOrDefaultAsync(c => c.Name == character.Name && c.Realm == character.Realm && c.Region == character.Region);
+
+            if (existingCharacter == null)
+            {
+                _context.Characters.Add(character);
+                await _context.SaveChangesAsync();
+                existingCharacter = character;
+            }
+
+            var alreadyLinked = await _context.UserCharacters
+                .AnyAsync(uc => uc.UserId == userIdClaim && uc.CharacterId == existingCharacter.Id);
+
+            if (!alreadyLinked)
+            {
+                var userCharacter = new UserCharacter
+                {
+                    UserId = userIdClaim,
+                    CharacterId = existingCharacter.Id
+                };
+                _context.UserCharacters.Add(userCharacter);
+                await _context.SaveChangesAsync();
+            }
+
+            var (score, progression) = await _raiderIOService.GetRaiderIoProfileAsync(name, realm, region);
             var equipedItems = await _blizzardService.GetCharacterEquipmentAsync(name, realm, region);
             var avatarUrl = await _blizzardService.GetCharacterAvatartAsync(name, realm, region);
-            character.AvatarUrl = avatarUrl;
-            character.GearItems = equipedItems;
-            character.RaiderIoScore = score;
-            character.RaidProgression = progression;
-            _context.Characters.Add(character);
+
+            existingCharacter.AvatarUrl = avatarUrl;
+            existingCharacter.GearItems = equipedItems;
+            existingCharacter.RaiderIoScore = score;
+            existingCharacter.RaidProgression = progression;
+
+            _context.Characters.Update(existingCharacter);
             await _context.SaveChangesAsync();
 
             return View("Index");

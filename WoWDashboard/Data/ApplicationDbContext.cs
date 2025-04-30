@@ -7,10 +7,11 @@ namespace WoWDashboard.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
-
+        public DbSet<User> Users { get; set; }
         public DbSet<Character> Characters { get; set; }
         public DbSet<GearItem> GearItems { get; set; }
         public DbSet<RaidProgression> RaidProgressions { get; set; }
+        public DbSet<UserCharacter> UserCharacters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,13 +29,16 @@ namespace WoWDashboard.Data
                 entity.Property(e => e.RaiderIoScore).HasColumnType("float");
                 entity.Property(e => e.AvatarUrl).HasMaxLength(255);
 
+              
+                // One-to-many relationship with GearItems
                 entity.HasMany(c => c.GearItems)
-                    .WithOne(g => g.Character)
-                    .HasForeignKey(g => g.CharacterId);
+                      .WithOne(g => g.Character)
+                      .HasForeignKey(g => g.CharacterId);
 
+                // One-to-one relationship with RaidProgression
                 entity.HasOne(c => c.RaidProgression)
-                    .WithOne(r => r.Character)
-                    .HasForeignKey<RaidProgression>(r => r.CharacterId);
+                      .WithOne(r => r.Character)
+                      .HasForeignKey<RaidProgression>(r => r.CharacterId);
             });
 
             modelBuilder.Entity<GearItem>(entity =>
@@ -52,7 +56,23 @@ namespace WoWDashboard.Data
                 entity.Property(e => e.Summary).HasMaxLength(500);
             });
 
-            base.OnModelCreating(modelBuilder);
+            // Define the many-to-many relationship between User and Character via UserCharacter
+            modelBuilder.Entity<UserCharacter>(entity =>
+            {
+                // Composite primary key
+                entity.HasKey(uc => new { uc.UserId, uc.CharacterId });
+
+                // Define foreign key relationships
+                entity.HasOne(uc => uc.User)
+                      .WithMany(u => u.UserCharacters)
+                      .HasForeignKey(uc => uc.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);  // Ensure cascading deletes
+
+                entity.HasOne(uc => uc.Character)
+                      .WithMany(c => c.UserCharacters)
+                      .HasForeignKey(uc => uc.CharacterId)
+                      .OnDelete(DeleteBehavior.Cascade);  // Ensure cascading deletes
+            });
         }
     }
 }

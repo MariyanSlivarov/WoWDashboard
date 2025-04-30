@@ -17,5 +17,8 @@
         public double RaiderIoScore { get; set; }
         public RaidProgression RaidProgression { get; set; } = new RaidProgression();
         public string AvatarUrl { get; set; } = string.Empty;
+        public int UserId { get; set; }
+        public User User { get; set; } = null!;
+        public ICollection<UserCharacter> UserCharacters { get; set; }
     }
 }
