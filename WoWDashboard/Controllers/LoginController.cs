@@ -6,6 +6,7 @@ using System.Text;
 using WoWDashboard.Models;
 using System.Security.Cryptography;
 using WoWDashboard.Data;
+using WoWDashboard.Services;
 
 namespace WoWDashboard.Controllers
 {
@@ -13,10 +14,12 @@ namespace WoWDashboard.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
+        private readonly JwtTokenService _jwtTokenService;
 
-        public LoginController(IConfiguration configuration, ApplicationDbContext context)
+        public LoginController(IConfiguration configuration, ApplicationDbContext context, JwtTokenService jwtTokenService)
         {
             _configuration = configuration;
+            _jwtTokenService = jwtTokenService;
             _context = context;
         }
 
@@ -45,7 +48,7 @@ namespace WoWDashboard.Controllers
                 return View(model);
             }
 
-            var token = GenerateJwtToken(user);
+            var token = _jwtTokenService.GenerateJwtToken(user);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
@@ -71,29 +74,5 @@ namespace WoWDashboard.Controllers
 
             return RedirectToAction("Index", "Login");
         }
-
-        private string GenerateJwtToken(User user)
-        {
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
-            };
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
     }
 }

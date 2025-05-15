@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     ));
 builder.Services.AddScoped<BlizzardService>();
 builder.Services.AddSingleton<RaiderIOService>();
+builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
