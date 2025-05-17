@@ -23,7 +23,7 @@ namespace WoWDashboard.Controllers.Api
 
         [Route("api/[controller]")]
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto login)
+        public IActionResult Login([FromBody] Login login)
         {
             string hashedInput = Convert.ToBase64String(
         SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(login.Password)));

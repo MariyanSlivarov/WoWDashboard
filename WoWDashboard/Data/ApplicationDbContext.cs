@@ -15,64 +15,84 @@ namespace WoWDashboard.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(u => u.Id);
+                entity.Property(u => u.Username).IsRequired().HasMaxLength(255);
+                entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
+            });
+
             modelBuilder.Entity<Character>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.OriginalName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.OriginalRealm).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.OriginalRegion).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Realm).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Race).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Guild).HasMaxLength(50);
-                entity.Property(e => e.CharacterClass).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.RaiderIoScore).HasColumnType("float");
-                entity.Property(e => e.AvatarUrl).HasMaxLength(255);
+                entity.Property(e => e.OriginalName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.OriginalRealm).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.OriginalRegion).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Realm).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Region).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Level).IsRequired();
+                entity.Property(e => e.Race).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Guild).HasMaxLength(255);
+                entity.Property(e => e.CharacterClass).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.RaiderIoScore).HasColumnType("double");
+                entity.Property(e => e.AvatarUrl).HasMaxLength(500);
 
-              
-                // One-to-many relationship with GearItems
                 entity.HasMany(c => c.GearItems)
                       .WithOne(g => g.Character)
-                      .HasForeignKey(g => g.CharacterId);
+                      .HasForeignKey(g => g.CharacterId)
+                      .OnDelete(DeleteBehavior.Cascade);
 
-                // One-to-one relationship with RaidProgression
                 entity.HasOne(c => c.RaidProgression)
                       .WithOne(r => r.Character)
-                      .HasForeignKey<RaidProgression>(r => r.CharacterId);
+                      .HasForeignKey<RaidProgression>(r => r.CharacterId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(c => c.UserCharacters)
+                      .WithOne(uc => uc.Character)
+                      .HasForeignKey(uc => uc.CharacterId);
             });
 
             modelBuilder.Entity<GearItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Slot).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Rarity).HasMaxLength(50);
+                entity.Property(e => e.Slot).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Rarity).HasMaxLength(255);
+                entity.Property(e => e.ItemLevel).IsRequired();
+                entity.Property(e => e.ItemId).IsRequired();
+                entity.HasOne(e => e.Character)
+                      .WithMany(c => c.GearItems)
+                      .HasForeignKey(e => e.CharacterId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<RaidProgression>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.RaidName).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Summary).HasMaxLength(500);
+                entity.Property(e => e.RaidName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Summary).HasColumnType("text");
+                entity.HasOne(e => e.Character)
+                      .WithOne(c => c.RaidProgression)
+                      .HasForeignKey<RaidProgression>(r => r.CharacterId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Define the many-to-many relationship between User and Character via UserCharacter
             modelBuilder.Entity<UserCharacter>(entity =>
             {
-                // Composite primary key
                 entity.HasKey(uc => new { uc.UserId, uc.CharacterId });
 
-                // Define foreign key relationships
                 entity.HasOne(uc => uc.User)
                       .WithMany(u => u.UserCharacters)
                       .HasForeignKey(uc => uc.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);  // Ensure cascading deletes
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(uc => uc.Character)
                       .WithMany(c => c.UserCharacters)
                       .HasForeignKey(uc => uc.CharacterId)
-                      .OnDelete(DeleteBehavior.Cascade);  // Ensure cascading deletes
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
+
     }
 }
