@@ -24,6 +24,7 @@ namespace WoWDashboard.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             return View();
@@ -64,13 +65,14 @@ namespace WoWDashboard.Controllers
             return View(await userCharacters.ToListAsync());
         }
 
-
+        [Authorize]
         public IActionResult GoToIndex()
         {
             return View("Index");
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Details(string name, string realm, string region)
         {
             var character = await _blizzardService.GetCharacterInfoAsync(name, realm, region);
@@ -94,6 +96,7 @@ namespace WoWDashboard.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> SavedCharacterDetails(int id)
         {
            
@@ -111,6 +114,7 @@ namespace WoWDashboard.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SaveCharacter(string name, string realm, string region)
         {
             var character = await _blizzardService.GetCharacterInfoAsync(name, realm, region);
@@ -165,6 +169,7 @@ namespace WoWDashboard.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var character = await _context.Characters.FindAsync(id);
@@ -176,6 +181,7 @@ namespace WoWDashboard.Controllers
         }
      
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -188,6 +194,7 @@ namespace WoWDashboard.Controllers
             return RedirectToAction(nameof(SavedCharacters));
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             var character = await _context.Characters.FindAsync(id);
@@ -199,6 +206,7 @@ namespace WoWDashboard.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFinal(int id, string name, string realm, string characterClass, string race, int level, string region, string guild, int raiderIoScore, string avatarUrl)
         {
@@ -228,6 +236,8 @@ namespace WoWDashboard.Controllers
 
             return RedirectToAction(nameof(SavedCharacters));
         }
+
+        [Authorize]
         public async Task<IActionResult> UpdateCharacter(int id)
         {
             var character = await _context.Characters.FindAsync(id);

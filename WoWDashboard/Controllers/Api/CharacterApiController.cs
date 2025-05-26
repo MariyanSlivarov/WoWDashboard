@@ -23,10 +23,12 @@ namespace WoWDashboard.Controllers.Api
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterDto>>> GetCharacters(
-            int page = 1,
-            int pageSize = 10,
-            string? name = null,
-            string? characterClass = null)
+        int page = 1,
+        int pageSize = 10,
+        string? name = null,
+        string? characterClass = null,
+        string? sortBy = null,
+        bool ascending = true)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
@@ -45,6 +47,16 @@ namespace WoWDashboard.Controllers.Api
             {
                 query = query.Where(c => c.CharacterClass.Contains(characterClass));
             }
+
+            query = (sortBy?.ToLower()) switch
+            {
+                "name" => ascending ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name),
+                "level" => ascending ? query.OrderBy(c => c.Level) : query.OrderByDescending(c => c.Level),
+                "raiderioscore" => ascending ? query.OrderBy(c => c.RaiderIoScore) : query.OrderByDescending(c => c.RaiderIoScore),
+                "race" => ascending ? query.OrderBy(c => c.Race) : query.OrderByDescending(c => c.Race),
+                "realm" => ascending ? query.OrderBy(c => c.Realm) : query.OrderByDescending(c => c.Realm),
+                _ => query.OrderBy(c => c.Id) // Default sorting
+            };
 
             var characters = await query
                 .Skip((page - 1) * pageSize)
